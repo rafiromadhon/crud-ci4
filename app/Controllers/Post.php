@@ -16,7 +16,7 @@ class Post extends BaseController
         $pager = \Config\Services::pager();
 
         $data = array (
-            'posts' => $postModel->paginate(2, 'post'),
+            'posts' => $postModel->paginate(20, 'post'),
             'pager' => $postModel->pager
         );
 
@@ -135,6 +135,23 @@ class Post extends BaseController
             return redirect()->to(base_url('post'));
         }
 
+    }
+
+    public function delete($id)
+    {
+        //model initialize
+        $postModel = new PostModel();
+
+        $post = $postModel->find($id);
+
+        if($post) {
+            $postModel->delete($id);
+
+            //flash message
+            session()->setFlashdata('message', 'Post Berhasil Dihapus');
+
+            return redirect()->to(base_url('post'));
+        }
     }
 
 
