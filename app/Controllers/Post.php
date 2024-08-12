@@ -73,4 +73,69 @@ class Post extends BaseController
         }
 
     }
+
+    public function edit($id)
+    {
+        //model initialize
+        $postModel = new PostModel();
+
+        $data = array(
+            'post' => $postModel->find($id)
+        );
+
+        return view('post-edit', $data);
+    }
+
+    public function update($id)
+    {
+        //load helper form and URL
+        helper(['form', 'url']);
+         
+        //define validation
+        $validation = $this->validate([
+            'title' => [
+                'rules'  => 'required',
+                'errors' => [
+                    'required' => 'Masukkan Judul Post.'
+                ]
+            ],
+            'content'    => [
+                'rules'  => 'required',
+                'errors' => [
+                    'required' => 'Masukkan konten Post.'
+                ]
+            ],
+        ]);
+
+        if(!$validation) {
+
+            //model initialize
+            $postModel = new PostModel();
+
+            //render view with error validation message
+            return view('post-edit', [
+                'post' => $postModel->find($id),
+                'validation' => $this->validator
+            ]);
+
+        } else {
+
+            //model initialize
+            $postModel = new PostModel();
+            
+            //insert data into database
+            $postModel->update($id, [
+                'title'   => $this->request->getPost('title'),
+                'content' => $this->request->getPost('content'),
+            ]);
+
+            //flash message
+            session()->setFlashdata('message', 'Post Berhasil Diupdate');
+
+            return redirect()->to(base_url('post'));
+        }
+
+    }
+
+
 }
